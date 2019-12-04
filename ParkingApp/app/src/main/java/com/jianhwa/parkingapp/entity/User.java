@@ -11,11 +11,12 @@ public class User implements Serializable {
     public String birthday;
     public String address;
     public String phone;
+    public String balance;
 
     public User() {
     }
 
-    public User(String email, String firstName, String lastName, String gender, String birthday, String address, String phone) {
+    public User(String email, String firstName, String lastName, String gender, String birthday, String address, String phone, String balance) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -23,6 +24,7 @@ public class User implements Serializable {
         this.birthday = birthday;
         this.address = address;
         this.phone = phone;
+        this.balance = balance;
     }
 
 
@@ -80,5 +82,13 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getBalance() {
+        return balance;
+    }
+
+    public void setBalance(String balance) {
+        this.balance = balance;
     }
 }

@@ -42,7 +42,7 @@ import java.util.Locale;
 public class UpdateUserProfileActivity extends AppCompatActivity {
     private String userId;
     private User oldProfile;
-    private String email;
+    private String email, balance;
     private User newProfile;
 
     private EditText et_fname, et_lname, et_address, et_phone;
@@ -53,7 +53,6 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
     private Button btn_submit;
 
     private FirebaseDatabase firebaseDatabase;
-    private FirebaseStorage firebaseStorage;
     private DatabaseReference databaseReference;
 
     @Override
@@ -69,13 +68,15 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         et_phone = findViewById(R.id.UpdateUserProfile_phone);
         btn_submit = findViewById(R.id.UpdateUserProfile_button_submit);
 
+        balance = "0.00";
+
 
         if(getIntent()!=null && getIntent().getExtras()!=null){
             Bundle bundle = getIntent().getExtras();
             if(!bundle.getSerializable("USER_PROFILE").equals(null)){
                 oldProfile = (User) bundle.getSerializable("USER_PROFILE");
 
-
+                balance = oldProfile.getBalance();
                 et_fname.setText(oldProfile.getFirstName());
                 et_lname.setText(oldProfile.getLastName());
                 et_bday.setText(oldProfile.getBirthday());
@@ -91,7 +92,6 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         }
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseStorage = FirebaseStorage.getInstance();
         databaseReference = firebaseDatabase.getReference("user");
 
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -214,7 +214,7 @@ public class UpdateUserProfileActivity extends AppCompatActivity {
         if(!TextUtils.isEmpty(fname) && !TextUtils.isEmpty(lname) && !TextUtils.isEmpty(bday)
                 && !TextUtils.isEmpty(address) && !TextUtils.isEmpty(phone) && !TextUtils.isEmpty(gender) ) {
             if (phone.matches("^(?=(?:[0]){1})(?=[0-9]{9,11}).*")) {
-                newProfile = new User(email, fname, lname, gender, bday, address, phone);
+                newProfile = new User(email, fname, lname, gender, bday, address, phone, balance);
                 return true;
             }else {
                 Toast.makeText(UpdateUserProfileActivity.this, "Invalid phone number", Toast.LENGTH_SHORT).show();

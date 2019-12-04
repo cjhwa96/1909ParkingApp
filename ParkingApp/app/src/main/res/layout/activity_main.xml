@@ -44,13 +44,13 @@
         android:layout_marginBottom="16dp"
         android:adjustViewBounds="true"
         android:background="@drawable/circle_icon"
+        android:contentDescription="@string/todo"
+        android:padding="15dp"
         android:scaleType="centerInside"
         android:src="@drawable/qr"
-        android:padding="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="@string/todo" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/mainProfileB"
@@ -63,6 +63,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#EB7070"
+        android:textColorLink="#D81b60"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/main_QR_imagebutton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,12 +86,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_recyclerview"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/main_QR_imagebutton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -116,4 +115,19 @@
         app:layout_constraintEnd_toEndOf="@+id/main_recyclerview"
         app:layout_constraintStart_toStartOf="@+id/main_recyclerview"
         app:layout_constraintTop_toTopOf="@+id/main_recyclerview" />
+
+    <ImageButton
+        android:id="@+id/mainAddCarB"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="24dp"
+        android:accessibilityLiveRegion="none"
+        android:background="@drawable/circle_icon"
+        android:padding="5dp"
+        android:scaleType="centerInside"
+        android:src="@android:drawable/ic_input_add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_recyclerview"
+        tools:src="@android:drawable/ic_input_add" />
 </androidx.constraintlayout.widget.ConstraintLayout>

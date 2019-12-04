@@ -28,8 +28,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private TextView textViewBalance, textViewNameOfUser;
-    private Button buttonTopUp, buttonProfile ;
-    private ImageButton buttonQRScanner;
+    private Button buttonTopUp, buttonProfile;
+    private ImageButton buttonQRScanner, buttonAddCar;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private String currentUserId;
@@ -49,17 +49,60 @@ public class MainActivity extends AppCompatActivity {
         buttonProfile = findViewById(R.id.mainProfileB);
         buttonTopUp = findViewById(R.id.mainTopUpB);
         buttonQRScanner = findViewById(R.id.main_QR_imagebutton);
+        buttonAddCar = findViewById(R.id.mainAddCarB);
         recyclerView = findViewById(R.id.main_recyclerview);
         progressBar =findViewById(R.id.mainProgressBar);
         if (currentUserProfile!=null){
             textViewNameOfUser.setText(currentUserProfile.getFirstName());
+            textViewBalance.setText("RM " + currentUserProfile.getBalance());
         } else {
             textViewNameOfUser.setText("Profile");
+            textViewBalance.setText("RM 0.00");
         }
 
-//        myRef = database.getReference("car");
+        readData();
 
+        buttonProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+                intent.putExtra("USER_PROFILE", currentUserProfile);
+                startActivity(intent);
+            }
+        });
 
+        buttonTopUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TopUpActivity.class);
+                intent.putExtra("USER_PROFILE", currentUserProfile);
+                startActivity(intent);
+            }
+        });
+
+        buttonQRScanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, QRScannerActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        buttonAddCar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, AddCarActivity.class);
+//                intent.putExtra("USER_PROFILE", currentUserProfile);
+//                startActivity(intent);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkUserProfile();
     }
 
     private void checkUserProfile(){
@@ -79,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     currentUserProfile = dataSnapshot.getValue(User.class);
                     textViewNameOfUser.setText(currentUserProfile.getFirstName());
+                    textViewBalance.setText("RM " + currentUserProfile.getBalance());
                 }
 
             }
@@ -100,6 +144,9 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 progressBar.setVisibility(View.GONE);
+                if (cars.size() >= 3){
+                    buttonAddCar.setVisibility(View.GONE);
+                }
             }
 
             @Override

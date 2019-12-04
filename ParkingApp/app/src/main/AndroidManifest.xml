@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jianhwa.parkingapp">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,7 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.UpdateUserProfileActivity"></activity>
+        <activity android:name=".activity.TopUpActivity"></activity>
+        <activity android:name=".activity.QRScannerActivity" />
+        <activity android:name=".activity.UserProfileActivity" />
+        <activity android:name=".activity.UpdateUserProfileActivity" />
         <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +26,10 @@
         <activity android:name=".activity.SignupActivity" />
         <activity android:name=".activity.ResetpasswordActivity" />
         <activity android:name=".activity.MainActivity" />
+
+        <meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="barcode" />
     </application>
 
 </manifest>
