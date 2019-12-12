@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,10 +24,15 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.jianhwa.parkingapp.R;
+import com.jianhwa.parkingapp.entity.ParkingTicket;
+import com.jianhwa.parkingapp.entity.ServerService;
 
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
 
 public class QRScannerActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 200;
@@ -93,6 +99,22 @@ public class QRScannerActivity extends AppCompatActivity {
                             public void run() {
                                 Vibrator vibrator = (Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                 vibrator.vibrate(1000);
+                                if (qrCodes.valueAt(0).displayValue.equals("DriveIn")){
+                                    Intent intent = new Intent(QRScannerActivity.this, EnteringActivity.class);
+                                    intent.putExtra("QR_TYPE", "DriveIn");
+                                    startActivity(intent);
+                                    finish();
+                                } else if (qrCodes.valueAt(0).displayValue.equals("ExpressIn")){
+                                    Intent intent = new Intent(QRScannerActivity.this, EnteringActivity.class);
+                                    intent.putExtra("QR_TYPE", "ExpressIn");
+                                    startActivity(intent);
+                                    finish();
+                                } else if (qrCodes.valueAt(0).displayValue.equals("Exit")){
+                                    Intent intent = new Intent(QRScannerActivity.this, EnteringActivity.class);
+                                    intent.putExtra("QR_TYPE", "Exit");
+                                    startActivity(intent);
+                                    finish();
+                                }
                                 textView_QRpreview.setText(qrCodes.valueAt(0).displayValue);
                             }
                         });

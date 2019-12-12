@@ -12,6 +12,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.jianhwa.parkingapp.activity.CarProfileActivity;
+import com.jianhwa.parkingapp.activity.MainActivity;
+import com.jianhwa.parkingapp.activity.TopUpActivity;
 import com.jianhwa.parkingapp.entity.Car;
 import com.jianhwa.parkingapp.entity.FirebaseDatabaseHelper;
 
@@ -69,39 +73,46 @@ public class CarRecyclerViewAdapter extends RecyclerView.Adapter<CarRecyclerView
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setCancelable(true)
-                            .setTitle("Delete Car")
-                            .setMessage("Are you sure you want to delete?")
-                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new FirebaseDatabaseHelper().deleteCar(carsOwnerId, car.getCarPlate(), new FirebaseDatabaseHelper.DataStatus() {
-                                        @Override
-                                        public void DataIsLoaded(List<Car> cars) {
+                    Intent intent = new Intent(mContext, CarProfileActivity.class);
+                    intent.putExtra("CAR_SELECTED", car);
+                    mContext.startActivity(intent);
 
-                                        }
 
-                                        @Override
-                                        public void DataIsInserted() {
 
-                                        }
 
-                                        @Override
-                                        public void DataIsDeleted() {
-                                            Toast.makeText(mContext, car.getCarPlate() + "'s profile has been deleted", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                }
-                            })
-                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
-                            .create()
-                            .show();
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+//                    builder.setCancelable(true)
+//                            .setTitle("Delete Car")
+//                            .setMessage("Are you sure you want to delete?")
+//                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    new FirebaseDatabaseHelper().deleteCar(carsOwnerId, car.getCarPlate(), new FirebaseDatabaseHelper.DataStatus() {
+//                                        @Override
+//                                        public void DataIsLoaded(List<Car> cars) {
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void DataIsInserted() {
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void DataIsDeleted() {
+//                                            Toast.makeText(mContext, car.getCarPlate() + "'s profile has been deleted", Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    });
+//                                }
+//                            })
+//                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//
+//                                }
+//                            })
+//                            .create()
+//                            .show();
                 }
             });
         }

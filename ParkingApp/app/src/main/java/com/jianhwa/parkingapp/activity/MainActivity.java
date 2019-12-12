@@ -1,9 +1,5 @@
 package com.jianhwa.parkingapp.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,21 +8,29 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.jianhwa.parkingapp.CarRecyclerViewAdapter;
 import com.jianhwa.parkingapp.R;
 import com.jianhwa.parkingapp.entity.Car;
-import com.jianhwa.parkingapp.entity.FirebaseDatabaseHelper;
+import com.jianhwa.parkingapp.entity.ServerService;
 import com.jianhwa.parkingapp.entity.User;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
 public class MainActivity extends AppCompatActivity {
+    private Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("https://api.github.com/")
+            .build();
+    private ServerService service = retrofit.create(ServerService.class);
     private TextView textViewBalance, textViewNameOfUser;
     private Button buttonTopUp, buttonProfile;
     private ImageButton buttonQRScanner, buttonAddCar;
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             textViewBalance.setText("RM 0.00");
         }
 
-        readData();
+        readCarData();
 
         buttonProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,9 +95,9 @@ public class MainActivity extends AppCompatActivity {
         buttonAddCar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, AddCarActivity.class);
-//                intent.putExtra("USER_PROFILE", currentUserProfile);
-//                startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, AddCarActivity.class);
+                intent.putExtra("USER_PROFILE", currentUserProfile);
+                startActivity(intent);
             }
         });
 
@@ -103,61 +107,120 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkUserProfile();
+        readCarData();
     }
 
     private void checkUserProfile(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("user");
+        Call<User> callUserProfile = service.getUserProfile(currentUserId);
 
-        myRef.child(currentUserId).addValueEventListener(new ValueEventListener() {
+        callUserProfile.enqueue(new Callback<User>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
+            public void onResponse(Call<User> call, Response<User> response) {
+                currentUserProfile = response.body();
 
-                if(!dataSnapshot.exists()){
+                if (currentUserProfile == null){
                     Intent intent = new Intent(MainActivity.this, UpdateUserProfileActivity.class);
                     startActivity(intent);
                     finish();
-                } else {
-                    currentUserProfile = dataSnapshot.getValue(User.class);
+                }else {
                     textViewNameOfUser.setText(currentUserProfile.getFirstName());
                     textViewBalance.setText("RM " + currentUserProfile.getBalance());
                 }
 
             }
+
             @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                System.out.println("[MainActivity] Failed to read User value." + error.toException());
+            public void onFailure(Call<User> call, Throwable t) {
+                System.out.println("[MainActivity] Failed to read User value." + t.getMessage());
+                call.cancel();
             }
         });
+
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("user");
+//
+//        myRef.child(currentUserId).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//
+//                if(!dataSnapshot.exists()){
+//                    Intent intent = new Intent(MainActivity.this, UpdateUserProfileActivity.class);
+//                    startActivity(intent);
+//                    finish();
+//                } else {
+//                    currentUserProfile = dataSnapshot.getValue(User.class);
+//                    textViewNameOfUser.setText(currentUserProfile.getFirstName());
+//                    textViewBalance.setText("RM " + currentUserProfile.getBalance());
+//                }
+//
+//            }
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//                System.out.println("[MainActivity] Failed to read User value." + error.toException());
+//            }
+//        });
     }
 
-    private void readData(){
+    private void readCarData(){
+        Call<List<Car>> callCarList = service.getCarList(currentUserId);
 
-        new FirebaseDatabaseHelper().readMyCars(currentUserId, new FirebaseDatabaseHelper.DataStatus() {
+        callCarList.enqueue(new Callback<List<Car>>() {
             @Override
-            public void DataIsLoaded(List<Car> cars) {
+            public void onResponse(Call<List<Car>> call, Response<List<Car>> response) {
+                List<Car> cars = response.body();
 
-                CarRecyclerViewAdapter adapter = new CarRecyclerViewAdapter(MainActivity.this, cars, currentUserId);
-                recyclerView.setAdapter(adapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                if (!cars.isEmpty()) {
+                    CarRecyclerViewAdapter adapter = new CarRecyclerViewAdapter(MainActivity.this, cars, currentUserId);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                } else {
+                    Intent intent = new Intent(MainActivity.this, AddCarActivity.class);
+                    intent.putExtra("USER_PROFILE", currentUserProfile);
+                    startActivity(intent);
+                }
                 progressBar.setVisibility(View.GONE);
                 if (cars.size() >= 3){
                     buttonAddCar.setVisibility(View.GONE);
                 }
-            }
-
-            @Override
-            public void DataIsInserted() {
 
             }
 
             @Override
-            public void DataIsDeleted() {
-
+            public void onFailure(Call<List<Car>> call, Throwable t) {
+                System.out.println("[MainActivity] Failed to read Cars value." + t.getMessage());
+                call.cancel();
             }
         });
+
+
+
+
+
+//        new FirebaseDatabaseHelper().readMyCars(currentUserId, new FirebaseDatabaseHelper.DataStatus() {
+//            @Override
+//            public void DataIsLoaded(List<Car> cars) {
+//
+//                CarRecyclerViewAdapter adapter = new CarRecyclerViewAdapter(MainActivity.this, cars, currentUserId);
+//                recyclerView.setAdapter(adapter);
+//                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                progressBar.setVisibility(View.GONE);
+//                if (cars.size() >= 3){
+//                    buttonAddCar.setVisibility(View.GONE);
+//                }
+//            }
+//
+//            @Override
+//            public void DataIsInserted() {
+//
+//            }
+//
+//            @Override
+//            public void DataIsDeleted() {
+//
+//            }
+//        });
     }
 }

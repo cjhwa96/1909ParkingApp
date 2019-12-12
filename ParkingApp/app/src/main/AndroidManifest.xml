@@ -12,7 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.TopUpActivity"></activity>
+        <activity android:name=".activity.ParkingTicketActivity"></activity>
+        <activity android:name=".activity.AddCarActivity" />
+        <activity android:name=".activity.EnteringActivity" />
+        <activity android:name=".activity.CarProfileActivity" />
+        <activity android:name=".activity.TopUpActivity" />
         <activity android:name=".activity.QRScannerActivity" />
         <activity android:name=".activity.UserProfileActivity" />
         <activity android:name=".activity.UpdateUserProfileActivity" />
